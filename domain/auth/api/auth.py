@@ -1,3 +1,4 @@
+from debugpy.adapter import access_token
 from fastapi import APIRouter, Depends
 
 from domain.auth.dto.request import AuthSignUpRequest, AuthSignInRequest
@@ -27,9 +28,9 @@ async def auth_sign_in_handler(
     request: AuthSignInRequest,
     auth_service: AuthService = Depends()
 ):
-    result = await auth_service.login(request)
+    access_token = await auth_service.sign_in(request)
     return APIResponse(
         status="success",
         message="로그인 성공",
-        data={"user": result["user"], "token": result["token"]}
+        data={"access_token": access_token}
     )

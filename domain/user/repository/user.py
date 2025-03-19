@@ -15,3 +15,7 @@ class UserRepository:
         await self.session.commit()
         await self.session.refresh(instance=user)
         return user
+
+    def get_user_by_email(self, email: str) -> User | None:
+        from sqlalchemy import select
+        return self.session.scalar(select(User).where(User.email == email))
