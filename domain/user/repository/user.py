@@ -1,0 +1,17 @@
+from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
+
+from core.database.connection import get_db
+from domain.user.entity.user import User
+
+
+class UserRepository:
+    def __init__(self, session: Session = Depends(get_db)):
+        self.session = session
+
+    async def save_user(self, user: User) -> User:
+        self.session.add(instance=user)
+        await self.session.commit()
+        await self.session.refresh(instance=user)
+        return user
