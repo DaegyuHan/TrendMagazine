@@ -9,7 +9,7 @@ from domain.user.entity.user import User
 from domain.user.exception import UserNotFoundException, DuplicateEmailException
 from domain.user.repository.user import UserRepository
 from core.config import Config
-
+from domain.user.service.user import UserService
 
 
 class AuthService:
@@ -17,7 +17,7 @@ class AuthService:
     secret_key: str = Config.JWT_SECRET_KEY
     jwt_algorithm: str = "HS256"
 
-    def __init__(self, user_repo: UserRepository = Depends()):
+    def __init__(self,user_repo: UserRepository = Depends(),):
         self.user_repo = user_repo
 
     async def sign_up(self, request: AuthSignUpRequest) -> User:
@@ -66,18 +66,19 @@ class AuthService:
             hashed_password.encode(self.encoding)
         )
 
-    def create_jwt(self, id: int) -> str:
+    def create_jwt(self, user_id: int) -> str:
         return jwt.encode(
             {
-                "sub": id,    # unique id
-                "exp": datetime.now() + timedelta(days=1),  # 시간 하루 유효
+                "sub": str(user_id),    # unique id
+                "exp": datetime.now() + timedelta(minutes=60),  # 시간 하루 유효
             },
             self.secret_key,
             algorithm=self.jwt_algorithm)
 
-    def decode_jwt(self, access_token: str):
+    def decode_jwt(self, access_token: str) -> str:
         payload: dict = jwt.decode(
             access_token, self.secret_key, algorithms=[self.jwt_algorithm]
         )
-        # expire
-        return payload["sub"]   # username
+
+        # sub 값이 문자열임을 보장하고, 필요시 int로 변환
+        return payload["sub"]

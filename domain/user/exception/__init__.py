@@ -5,7 +5,7 @@ class UserNotFoundException(CustomException):
         super().__init__(
             code=404,
             error_code="NOT_FOUND_USER",
-            message="등록되지 않은 유저입니다."
+            message="등록되지 않은 사용자입니다."
         )
 
 class DuplicateEmailException(CustomException):

@@ -19,3 +19,7 @@ class UserRepository:
     def get_user_by_email(self, email: str) -> User | None:
         from sqlalchemy import select
         return self.session.scalar(select(User).where(User.email == email))
+
+    def get_user_by_user_id(self, user_id: int) -> User | None:
+        from sqlalchemy import select
+        return self.session.scalar(select(User).where(User.id == user_id))
