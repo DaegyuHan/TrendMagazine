@@ -1,4 +1,3 @@
-from debugpy.adapter import access_token
 from fastapi import APIRouter, Depends
 
 from domain.auth.dto.request import AuthSignUpRequest, AuthSignInRequest

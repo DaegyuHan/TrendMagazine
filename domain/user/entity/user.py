@@ -3,6 +3,7 @@ from datetime import datetime
 from sqlalchemy import Column, Integer, String
 from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.dialects.postgresql import TIMESTAMP
+from sqlalchemy.orm import relationship
 
 from core.database.orm import Base
 
@@ -28,6 +29,8 @@ class User(Base):
     user_role = Column(SQLEnum(UserRole, name='user_role'), default=UserRole.GUEST, nullable=False)
 
     created_at = Column(TIMESTAMP(precision=6), default=datetime.now, nullable=False)
+
+    articles = relationship("Article", back_populates="user")
 
     @classmethod
     def create(cls, email: str, hashed_password: str, nickname: str):
