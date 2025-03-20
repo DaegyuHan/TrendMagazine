@@ -13,16 +13,30 @@ router = APIRouter(prefix="/api/v1/users", tags=["User"])
 
 # 내 프로필 조회
 @router.get("/me")
-def get_my_profile(
+async def get_my_profile(
         access_token: str = Depends(oauth2_scheme),
         auth_service: AuthService = Depends(),
         user_service: UserService = Depends(),
 ):
-    # user_id: str = auth_service.decode_jwt(access_token=access_token)
-    # user: User | None = user_service.get_user_by_user_id(user_id=user_id)
-    # data = UserSchema.from_orm(user).dict()
+    user_id: int = auth_service.decode_jwt(access_token=access_token)
+    user: User = await user_service.get_user_by_user_id(user_id=user_id)
+    data = UserSchema.from_orm(user).dict()
     return APIResponse(
         status="success",
         message="내 프로필 조회 완료",
-        # data=data
+        data=data
+    )
+
+# 다른 사람 조회
+@router.get("/{user_id}")
+async def get_user_profile(
+        user_id: int,
+        user_service: UserService = Depends(),
+):
+    user: User = await user_service.get_user_by_user_id(user_id=user_id)
+    data = UserSchema.from_orm(user).dict()
+    return APIResponse(
+        status="success",
+        message="유저 프로필 조회 완료",
+        data=data
     )

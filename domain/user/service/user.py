@@ -10,5 +10,5 @@ class UserService:
     def __init__(self, user_repo: UserRepository = Depends()):
         self.user_repo = user_repo
 
-    def get_user_by_user_id(self, user_id: str) -> Optional[User]:
-        return self.user_repo.get_user_by_user_id(int(user_id))
+    def get_user_by_user_id(self, user_id: int) -> Optional[User]:
+        return self.user_repo.get_user_by_user_id(user_id)

@@ -35,7 +35,7 @@ class AuthService:
 
     async def sign_in(self, request: AuthSignInRequest) -> str:
         # email 확인
-        user: User | None = await self.user_repo.get_user_by_email(email=request.email)
+        user: User = await self.user_repo.get_user_by_email(email=request.email)
         if not user:
             raise UserNotFoundException()
 
@@ -48,7 +48,7 @@ class AuthService:
             raise NotAuthorizedException()
 
         # access token 발급
-        access_token: str = self.create_jwt(id=user.id)
+        access_token: str = self.create_jwt(user_id=user.id)
 
         return access_token
 
@@ -75,10 +75,10 @@ class AuthService:
             self.secret_key,
             algorithm=self.jwt_algorithm)
 
-    def decode_jwt(self, access_token: str) -> str:
+    def decode_jwt(self, access_token: str) -> int:
         payload: dict = jwt.decode(
             access_token, self.secret_key, algorithms=[self.jwt_algorithm]
         )
 
         # sub 값이 문자열임을 보장하고, 필요시 int로 변환
-        return payload["sub"]
+        return int(payload["sub"])

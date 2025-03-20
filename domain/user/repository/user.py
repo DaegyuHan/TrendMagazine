@@ -16,10 +16,10 @@ class UserRepository:
         await self.session.refresh(instance=user)
         return user
 
-    def get_user_by_email(self, email: str) -> User | None:
+    def get_user_by_email(self, email: str) -> User:
         from sqlalchemy import select
         return self.session.scalar(select(User).where(User.email == email))
 
-    def get_user_by_user_id(self, user_id: int) -> User | None:
+    def get_user_by_user_id(self, user_id: int) -> User:
         from sqlalchemy import select
         return self.session.scalar(select(User).where(User.id == user_id))
