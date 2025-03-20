@@ -6,7 +6,7 @@ from domain.auth.service.auth import AuthService
 from domain.common.dto.response.api_response import APIResponse
 from domain.user.dto.response import UserSchema
 
-router = APIRouter(prefix="/api/v1/auth")
+router = APIRouter(prefix="/api/v1/auth", tags=["Auth"])
 
 # 회원가입
 @router.post("/sign-up", status_code=201, response_model=APIResponse)
