@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import relationship
@@ -26,11 +26,10 @@ class User(Base):
     social_id = Column(String(60), nullable=True)
     social_provider = Column(String(60), nullable=True)
     user_status = Column(SQLEnum(UserStatus, name='user_status'), default=UserStatus.ACTIVE, nullable=False)
-    user_role = Column(SQLEnum(UserRole, name='user_role'), default=UserRole.GUEST, nullable=False)
-
+    user_role = Column(SQLEnum(UserRole, name='user_role'), default=UserRole.USER, nullable=False)
     created_at = Column(TIMESTAMP(precision=6), default=datetime.now, nullable=False)
 
-    articles = relationship("Article", back_populates="user")
+    magazines = relationship("Magazine", backref="owner", lazy="dynamic") # 지연로딩
 
     @classmethod
     def create(cls, email: str, hashed_password: str, nickname: str):
