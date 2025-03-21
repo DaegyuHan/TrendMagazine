@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, ForeignKey, Text
+from sqlalchemy import Column, Integer, ForeignKey, Text, String
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import relationship
 
@@ -14,11 +14,12 @@ class Article(Base):
 
     id = Column(Integer, primary_key=True)
     content = Column(Text, nullable=True)
+    category = Column(String(30), nullable=False)
     created_at = Column(TIMESTAMP(precision=6), default=datetime.now, nullable=False)
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
 
     user = relationship("User", back_populates="articles")
 
     @classmethod
-    def create(cls, content: str, user_id: int):
-        return cls(content=content, user_id=user_id)
+    def create(cls, content: str, category: str, user_id: int):
+        return cls(content=content, category=category, user_id=user_id)
