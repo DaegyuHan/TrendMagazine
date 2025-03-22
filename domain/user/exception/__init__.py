@@ -15,3 +15,11 @@ class DuplicateEmailException(CustomException):
             error_code="DUPLICATE_EMAIL",
             message="이미 사용 중인 이메일입니다."
         )
+
+class UserNotAuthorizedException(CustomException):
+    def __init__(self):
+        super().__init__(
+            code=403,  # Forbidden (권한 없음)
+            error_code="NOT_AUTHORIZED",
+            message="권한이 없습니다."
+        )

@@ -14,3 +14,7 @@ class MagazineRepository:
         await self.session.commit()
         await self.session.refresh(instance=magazine)
         return magazine
+
+    def get_magazine_by_magazine_id(self, magazine_id: int) -> Magazine:
+        from sqlalchemy import select
+        return self.session.scalar(select(Magazine).where(Magazine.id == magazine_id))

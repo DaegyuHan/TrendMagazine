@@ -28,6 +28,6 @@ async def create_magazine(
     data = MagazineSchema.from_orm(magazine).dict()
     return APIResponse(
         status="success",
-        message="내 프로필 조회 완료",
+        message="매거진 생성 완료",
         data=data
     )

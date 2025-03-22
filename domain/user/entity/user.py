@@ -29,7 +29,7 @@ class User(Base):
     user_role = Column(SQLEnum(UserRole, name='user_role'), default=UserRole.USER, nullable=False)
     created_at = Column(TIMESTAMP(precision=6), default=datetime.now, nullable=False)
 
-    magazines = relationship("Magazine", backref="owner", lazy="dynamic") # 지연로딩
+    magazines = relationship("Magazine", backref="user", lazy="dynamic") # 지연로딩
 
     @classmethod
     def create(cls, email: str, hashed_password: str, nickname: str):

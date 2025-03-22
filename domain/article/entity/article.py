@@ -22,5 +22,5 @@ class Article(Base):
     magazine = relationship("Magazine", back_populates="articles")
 
     @classmethod
-    def create(cls, content: str, category: str, user_id: int):
-        return cls(content=content, category=category, user_id=user_id)
+    def create(cls, content: str, category: str, magazine_id:int, user_id: int):
+        return cls(content=content, category=category, magazine_id=magazine_id, user_id=user_id)

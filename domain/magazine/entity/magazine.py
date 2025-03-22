@@ -24,7 +24,6 @@ class Magazine(Base):
     user_id = Column(Integer, ForeignKey("user.id"))
 
     articles = relationship("Article", back_populates="magazine")
-    user = relationship("User", back_populates="magazines")
 
     @classmethod
     def create(cls, name:str, profile_image:str, user_id:int) -> "Magazine":
