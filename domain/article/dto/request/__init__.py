@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 
-class ArticleCreateRequest(BaseModel):
+class CreateArticleRequest(BaseModel):
     content: str = Field(..., examples=["content"])
 
     class Config:

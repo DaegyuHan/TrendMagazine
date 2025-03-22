@@ -17,8 +17,9 @@ class Article(Base):
     category = Column(String(30), nullable=False)
     created_at = Column(TIMESTAMP(precision=6), default=datetime.now, nullable=False)
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    magazine_id = Column(Integer, ForeignKey("magazine.id"), nullable=False)
 
-    user = relationship("User", back_populates="articles")
+    magazine = relationship("Magazine", back_populates="articles")
 
     @classmethod
     def create(cls, content: str, category: str, user_id: int):
