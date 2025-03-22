@@ -24,9 +24,9 @@ class ArticleService:
         # 작성자 검증
         self.validate_magazine_id(magazine_user_id=magazine.user_id, writer_user_id=user_id)
         # ai 를 활용해 카테고리 예측
-        category = await self.categorize_content(request.content)
+        main_category = await self.categorize_content(request.content)
         # article 객체 생성
-        article: Article = Article.create(request.content, category, magazine_id, user_id)
+        article: Article = Article.create(request.content, main_category, magazine_id, user_id)
         # db 저장
         article: Article = await self.article_repo.save_article(article)
         return article
@@ -43,8 +43,8 @@ class ArticleService:
             max_tokens=10,
             temperature=0.5,
         )
-        category = response.choices[0].message.content.strip()
-        return category
+        main_category = response.choices[0].message.content.strip()
+        return main_category
 
     # 매거진 오너와 작성자 유저 id 검증
     def validate_magazine_id(self, magazine_user_id: int, writer_user_id: int):

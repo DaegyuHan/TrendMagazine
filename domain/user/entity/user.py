@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String
 from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import relationship
@@ -16,7 +16,7 @@ from domain.user.entity.user_status import UserStatus
 
 
 class User(Base):
-    __tablename__ = "user"
+    __tablename__ = "users"
     __table_args__ = {'extend_existing': True}
 
     id = Column(Integer, primary_key=True)

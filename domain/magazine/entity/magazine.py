@@ -22,7 +22,7 @@ class Magazine(Base):
     created_at = Column(TIMESTAMP(), default=datetime.now, nullable=False)
     updated_at = Column(TIMESTAMP(), default=datetime.now, nullable=False)
 
-    user_id = Column(Integer, ForeignKey("user.id"))
+    user_id = Column(Integer, ForeignKey("users.id"))
 
     articles = relationship("Article", back_populates="magazine")
 

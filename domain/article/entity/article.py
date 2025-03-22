@@ -18,11 +18,11 @@ class Article(Base):
     created_at = Column(TIMESTAMP(), default=datetime.now, nullable=False)
     updated_at = Column(TIMESTAMP(), default=datetime.now, nullable=False)
 
-    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     magazine_id = Column(Integer, ForeignKey("magazine.id"), nullable=False)
 
     magazine = relationship("Magazine", back_populates="articles")
 
     @classmethod
-    def create(cls, content: str, category: str, magazine_id:int, user_id: int):
-        return cls(content=content, category=category, magazine_id=magazine_id, user_id=user_id)
+    def create(cls, content: str, main_category: str, magazine_id:int, user_id: int):
+        return cls(content=content, main_category=main_category, magazine_id=magazine_id, user_id=user_id)

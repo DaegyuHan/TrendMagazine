@@ -4,6 +4,9 @@ from sqlalchemy import pool
 from alembic import context
 from core.database.orm import Base
 from core.config import Config
+from domain.user.entity import user
+from domain.magazine.entity import magazine
+from domain.article.entity import article
 
 # Alembic Config object
 config = context.config
