@@ -6,7 +6,7 @@ from domain.article.entity.article import Article
 from domain.article.service.article import ArticleService
 from domain.auth.service.auth import AuthService
 from domain.common.dto.response.api_response import APIResponse
-from domain.article.dto.request import CreateArticleRequest
+from domain.article.dto.request import ArticleCreateRequest
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/auth/sign-in")
 
@@ -15,7 +15,7 @@ router = APIRouter(prefix="/api/v1/article", tags=["Article"])
 # 아티클 생성
 @router.post("", status_code=201, response_model=APIResponse)
 async def article_create_handler(
-        request: CreateArticleRequest,
+        request: ArticleCreateRequest,
         access_token: str = Depends(oauth2_scheme),
         auth_service: AuthService = Depends(),
         article_service: ArticleService = Depends(),
