@@ -19,7 +19,8 @@ class Magazine(Base):
     profile_image = Column(String(255), nullable=False)
     name = Column(String(60), nullable=False)
     description = Column(String(255), nullable=True)
-    created_at = Column(TIMESTAMP(precision=6), default=datetime.now, nullable=False)
+    created_at = Column(TIMESTAMP(), default=datetime.now, nullable=False)
+    updated_at = Column(TIMESTAMP(), default=datetime.now, nullable=False)
 
     user_id = Column(Integer, ForeignKey("user.id"))
 

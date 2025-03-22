@@ -14,8 +14,10 @@ class Article(Base):
 
     id = Column(Integer, primary_key=True)
     content = Column(Text, nullable=True)
-    category = Column(String(30), nullable=False)
-    created_at = Column(TIMESTAMP(precision=6), default=datetime.now, nullable=False)
+    main_category = Column(String(30), nullable=False)
+    created_at = Column(TIMESTAMP(), default=datetime.now, nullable=False)
+    updated_at = Column(TIMESTAMP(), default=datetime.now, nullable=False)
+
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     magazine_id = Column(Integer, ForeignKey("magazine.id"), nullable=False)
 

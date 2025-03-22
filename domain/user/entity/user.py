@@ -27,7 +27,9 @@ class User(Base):
     social_provider = Column(String(60), nullable=True)
     user_status = Column(SQLEnum(UserStatus, name='user_status'), default=UserStatus.ACTIVE, nullable=False)
     user_role = Column(SQLEnum(UserRole, name='user_role'), default=UserRole.USER, nullable=False)
-    created_at = Column(TIMESTAMP(precision=6), default=datetime.now, nullable=False)
+    created_at = Column(TIMESTAMP(), default=datetime.now, nullable=False)
+    updated_at = Column(TIMESTAMP(), default=datetime.now, nullable=False)
+
 
     magazines = relationship("Magazine", backref="user", lazy="dynamic") # 지연로딩
 
