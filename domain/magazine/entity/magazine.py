@@ -12,7 +12,7 @@ from core.database.orm import Base
 
 
 class Magazine(Base):
-    __tablename__ = "magazine"
+    __tablename__ = "magazines"
     __table_args__ = {'extend_existing': True}
 
     id = Column(Integer, primary_key=True)

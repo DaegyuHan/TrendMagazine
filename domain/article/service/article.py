@@ -11,7 +11,10 @@ from domain.user.exception import UserNotAuthorizedException
 
 
 class ArticleService:
-    def __init__(self,article_repo: ArticleRepository = Depends(), magazine_repo: MagazineRepository = Depends()):
+    def __init__(
+            self,article_repo: ArticleRepository = Depends(),
+            magazine_repo: MagazineRepository = Depends(),
+    ):
         self.article_repo = article_repo
         self.magazine_repo = magazine_repo
         self.openai_client = OpenAI(api_key=Config.OPENAI_API_KEY)

@@ -9,7 +9,7 @@ from core.database.orm import Base
 __all__ = ["Article"]
 
 class Article(Base):
-    __tablename__ = "article"
+    __tablename__ = "articles"
     __table_args__ = {'extend_existing': True}
 
     id = Column(Integer, primary_key=True)
@@ -19,7 +19,7 @@ class Article(Base):
     updated_at = Column(TIMESTAMP(), default=datetime.now, nullable=False)
 
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    magazine_id = Column(Integer, ForeignKey("magazine.id"), nullable=False)
+    magazine_id = Column(Integer, ForeignKey("magazines.id", ondelete="CASCADE"), nullable=False)
 
     magazine = relationship("Magazine", back_populates="articles")
 
