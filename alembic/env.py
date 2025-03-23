@@ -4,12 +4,6 @@ from sqlalchemy import pool
 from alembic import context
 from core.database.orm import Base
 from core.config import Config
-from domain.user.entity import user
-from domain.magazine.entity import magazine
-from domain.article.entity import article
-from domain.tag.entity import tags
-from domain.tag.entity import tag_similarity
-from domain.tag.entity import article_tags
 
 # Alembic Config object
 config = context.config

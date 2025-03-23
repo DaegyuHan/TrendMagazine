@@ -1,0 +1,31 @@
+from typing import Optional, List
+
+from fastapi import Depends
+from sqlalchemy.orm import Session
+
+from core.database.connection import get_db
+from domain.tag.entity.tags import Tag
+from domain.tag.entity.tag_similarity import TagSimilarity
+
+class TagRepository:
+    def __init__(self, session: Session = Depends(get_db)):
+        self.session = session
+
+    # 태그 이름으로 조회
+    async def get_tag_by_name(self, tag_name: str) -> Optional[Tag]:
+        result = await self.session.execute(
+            "SELECT * FROM tags WHERE tag_name = :tag_name", {"tag_name": tag_name}
+        )
+        return result.scalars().first()
+
+    # 새 태그 저장
+    async def save_tag(self, tag: Tag) -> Tag:
+        self.session.add(tag)
+        await self.session.commit()
+        await self.session.refresh(instance=tag)
+        return tag
+
+    # 모든 태그 조회
+    async def get_all_tags(self) -> List[Tag]:
+        result = await self.session.execute("SELECT * FROM tags")
+        return result.scalars().all()
