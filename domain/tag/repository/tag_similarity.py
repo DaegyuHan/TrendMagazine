@@ -22,9 +22,10 @@ class TagSimilarityRepository:
 
     # 태그가 이미 저장되어있는지 조회
     async def get_similarity(self, tag_id_1: int, tag_id_2: int) -> Optional[TagSimilarity]:
-        result = await self.session.execute(
+        from sqlalchemy import text
+        result = await self.session.execute(text(
             "SELECT * FROM tag_similarities WHERE "
-            "(tag_id_1 = :tag1 AND tag_id_2 = :tag2) OR (tag_id_1 = :tag2 AND tag_id_2 = :tag1)",
+            "(tag_id_1 = :tag1 AND tag_id_2 = :tag2) OR (tag_id_1 = :tag2 AND tag_id_2 = :tag1)"),
             {"tag1": tag_id_1, "tag2": tag_id_2}
         )
         return result.scalars().first()

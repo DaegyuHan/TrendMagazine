@@ -4,7 +4,7 @@ from core.database.orm import Base
 
 
 class TagSimilarity(Base):
-    __tablename__ = "tag_similarity"
+    __tablename__ = "tag_similarities"
     __table_args__ = {'extend_existing': True}
 
     id = Column(Integer, primary_key=True, index=True)  # 유사도 레코드 ID

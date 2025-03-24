@@ -2,6 +2,7 @@ from typing import Optional, List
 
 from fastapi import Depends
 from sqlalchemy.orm import Session
+from sqlalchemy import text, select
 
 from core.database.connection import get_db
 from domain.tag.entity.tags import Tag
@@ -13,9 +14,7 @@ class TagRepository:
 
     # 태그 이름으로 조회
     async def get_tag_by_name(self, tag_name: str) -> Optional[Tag]:
-        result = await self.session.execute(
-            "SELECT * FROM tags WHERE tag_name = :tag_name", {"tag_name": tag_name}
-        )
+        result = await self.session.execute(select(Tag).where(Tag.tag_name == tag_name))
         return result.scalars().first()
 
     # 새 태그 저장
@@ -27,5 +26,5 @@ class TagRepository:
 
     # 모든 태그 조회
     async def get_all_tags(self) -> List[Tag]:
-        result = await self.session.execute("SELECT * FROM tags")
+        result = await self.session.execute(select(Tag))
         return result.scalars().all()

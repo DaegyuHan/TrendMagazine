@@ -19,7 +19,7 @@ class ArticleRepository:
         return article
 
     # ArticleTags 에 태그와 연관성 저장
-    async def save_post_tag(self, article_id: int, tag_id: int, relevance: float):
+    async def save_article_tag(self, article_id: int, tag_id: int, relevance: float):
         article_tag = ArticleTags(article_id=article_id, tag_id=tag_id, relevance=relevance)
         self.session.add(article_tag)
         await self.session.commit()
