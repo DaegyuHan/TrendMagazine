@@ -1,4 +1,5 @@
 from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
 from core.database.connection import get_db
@@ -6,7 +7,7 @@ from domain.magazine.entity.magazine import Magazine
 
 
 class MagazineRepository:
-    def __init__(self, session: Session = Depends(get_db)):
+    def __init__(self, session: AsyncSession = Depends(get_db)):
         self.session = session
 
     async def save_magazine(self, magazine: Magazine) -> Magazine:
@@ -15,6 +16,6 @@ class MagazineRepository:
         await self.session.refresh(instance=magazine)
         return magazine
 
-    def get_magazine_by_magazine_id(self, magazine_id: int) -> Magazine:
+    async def get_magazine_by_magazine_id(self, magazine_id: int) -> Magazine:
         from sqlalchemy import select
-        return self.session.scalar(select(Magazine).where(Magazine.id == magazine_id))
+        return await self.session.scalar(select(Magazine).where(Magazine.id == magazine_id))

@@ -1,6 +1,7 @@
 from typing import Optional, List
 
 from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 from sqlalchemy import text, select
 
@@ -9,7 +10,7 @@ from domain.tag.entity.tags import Tag
 from domain.tag.entity.tag_similarity import TagSimilarity
 
 class TagRepository:
-    def __init__(self, session: Session = Depends(get_db)):
+    def __init__(self, session: AsyncSession = Depends(get_db)):
         self.session = session
 
     # 태그 이름으로 조회
@@ -20,7 +21,7 @@ class TagRepository:
     # 새 태그 저장
     async def save_tag(self, tag: Tag) -> Tag:
         self.session.add(tag)
-        await self.session.commit()
+        await self.session.flush()
         await self.session.refresh(instance=tag)
         return tag
 

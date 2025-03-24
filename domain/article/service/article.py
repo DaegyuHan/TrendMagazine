@@ -2,7 +2,10 @@ from typing import List, Tuple
 
 from fastapi import Depends
 from openai import OpenAI
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.database.connection import get_db
+from core.database.transaction import transaction
 from domain.article.dto.request import ArticleCreateRequest
 from domain.article.entity.article import Article
 from domain.article.repository.article import ArticleRepository
@@ -17,18 +20,23 @@ from domain.user.exception import UserNotAuthorizedException
 
 class ArticleService:
     def __init__(
-            self,article_repo: ArticleRepository = Depends(),
+            self,
+            article_repo: ArticleRepository = Depends(),
             magazine_repo: MagazineRepository = Depends(),
             tag_repo: TagRepository = Depends(),
             tag_similarity_repo: TagSimilarityRepository = Depends(),
+            db_session: AsyncSession = Depends(get_db),  # 선택적
     ):
         self.article_repo = article_repo
         self.magazine_repo = magazine_repo
         self.tag_repo = tag_repo
         self.tag_similarity_repo = tag_similarity_repo
+        self.db_session = db_session  # 필요하면 사용
         self.openai_client = OpenAI(api_key=Config.OPENAI_API_KEY)
 
+    @transaction
     async def create_article(self, request: ArticleCreateRequest, magazine_id: int, user_id: int) -> Article:
+        print("Transaction started:", self.db_session.in_transaction())
         # magazine 조회
         magazine = await self.magazine_repo.get_magazine_by_magazine_id(magazine_id)
         if not magazine:
@@ -36,19 +44,19 @@ class ArticleService:
         # 작성자 검증
         self.validate_magazine_id(magazine_user_id=magazine.user_id, writer_user_id=user_id)
         # ai 를 활용해 카테고리 예측
-        main_category, tags_with_relevance = await self.categorize_content(request.content)
+        main_category, tags = await self.categorize_content(request.content)
         # article 객체 생성
         article: Article = Article.create(request.content, main_category, magazine_id, user_id)
         # db 저장
         article: Article = await self.article_repo.save_article(article)
 
-        await self.save_tags(article.id, tags_with_relevance)
-        # await self.save_tag_similarities(tags_with_relevance)
-
+        await self.save_tags(article.id, tags)
+        # await self.save_tag_similarities(tags)
+        print("Transaction ending:", self.db_session.in_transaction())
         return article
 
     # OpenAI로 메인 카테고리와 상세 태그 5개를 예측
-    async def categorize_content(self, content: str) -> Tuple[str, List[Tuple[str, float]]]:
+    async def categorize_content(self, content: str) -> Tuple[str, List[str]]:
         prompt = (
             "다음 콘텐츠를 읽고 적절한 메인 카테고리를 다음 항목 중에서 지정해주세요 "
             "(미술, 자동차, 디자인, 엔터테인먼트, 패션, 음식, 신발, 게임, 음악, 스포츠, 전자, 영화, 기타, 라이프스타일).\n"

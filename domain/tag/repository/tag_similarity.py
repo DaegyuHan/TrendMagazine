@@ -1,6 +1,7 @@
 from typing import Optional
 
 from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
 from core.database.connection import get_db
@@ -8,7 +9,7 @@ from domain.tag.entity.tag_similarity import TagSimilarity
 
 
 class TagSimilarityRepository:
-    def __init__(self, session: Session = Depends(get_db)):
+    def __init__(self, session: AsyncSession = Depends(get_db)):
         self.session = session
 
     # 태그 유사도 저장
