@@ -156,3 +156,15 @@ class ArticleService:
     def validate_magazine_id(self, magazine_user_id: int, writer_user_id: int):
         if magazine_user_id != writer_user_id:
             raise UserNotAuthorizedException()
+
+    # main_category 로 조회
+    async def get_articles_by_main_category(self, main_category: str, page: int, limit: int):
+        # DB 쿼리 로직 구현
+        offset = (page - 1) * limit
+        articles = await self.article_repo.get_articles_by_main_category(
+            main_category=main_category,
+            offset=offset,
+            limit=limit
+        )
+        total = await self.article_repo.count_articles_by_main_category(main_category=main_category)
+        return articles, total

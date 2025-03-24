@@ -1,8 +1,9 @@
-from typing import Optional
+from typing import List
 
 from fastapi import Depends
+from sqlalchemy import select, and_, func, desc
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import Session
+
 from core.database.connection import get_db
 from domain.article.entity.article import Article
 from domain.article.entity.article_tags import ArticleTags
@@ -30,3 +31,26 @@ class ArticleRepository:
     #         "SELECT * FROM articles WHERE id = :id", {"id": article_id}
     #     )
     #     return result.scalars().first()
+
+
+    # main_category 해당 아티클 목록 조회
+    async def get_articles_by_main_category(
+            self,
+            main_category: str,
+            offset: int,
+            limit: int
+    ) -> List[Article]:
+        query = select(Article).where(Article.main_category == main_category).order_by(desc(Article.created_at)).offset(offset).limit(limit)
+        result = await self.session.execute(query)
+        articles = result.scalars().all()
+        return articles
+
+    # main_category 해당 아티클 수 반환
+    async def count_articles_by_main_category(
+            self,
+            main_category: str
+    ) -> int:
+        query = select(func.count()).where(Article.main_category == main_category)
+        result = await self.session.execute(query)
+        count = result.scalar() or 0  # None일 경우 0 반환
+        return count
