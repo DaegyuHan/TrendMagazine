@@ -43,7 +43,7 @@ class ArticleService:
         article: Article = await self.article_repo.save_article(article)
 
         await self.save_tags(article.id, tags_with_relevance)
-        await self.save_tag_similarities(tags_with_relevance)
+        # await self.save_tag_similarities(tags_with_relevance)
 
         return article
 
@@ -52,21 +52,19 @@ class ArticleService:
         prompt = (
             "다음 콘텐츠를 읽고 적절한 메인 카테고리를 다음 항목 중에서 지정해주세요 "
             "(미술, 자동차, 디자인, 엔터테인먼트, 패션, 음식, 신발, 게임, 음악, 스포츠, 전자, 영화, 기타, 라이프스타일).\n"
-            "그리고 이 콘텐츠와 관련된 상세 카테고리 태그 5개를 제안하고, 각 태그의 연관성(relevance)을 0~1 사이 값으로 평가해주세요.\n\n"
+            "그리고 이 콘텐츠와 관련된 상세 카테고리 3개를 제안해주세요. 상세 카테고리는 너무 상세하지 않고 최대한 간단하고 대표적인 단어로 해주세요.\n\n"
             f"콘텐츠: {content}\n\n"
             "응답 형식:\n"
             "Main Category: [카테고리]\n"
             "Tags:\n"
-            "- [태그1]: [연관성]\n"
-            "- [태그2]: [연관성]\n"
-            "- [태그3]: [연관성]\n"
-            "- [태그4]: [연관성]\n"
-            "- [태그5]: [연관성]"
+            "- [태그1]\n"
+            "- [태그2]\n"
+            "- [태그3]"
         )
         response = self.openai_client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt}],
-            max_tokens=100,
+            max_tokens=50,
             temperature=0.5,
         )
         # 🔹 OpenAI의 응답을 확인
@@ -78,30 +76,28 @@ class ArticleService:
         # 🔹 응답 파싱
         result = ai_response.split("\n")
         main_category = result[0].replace("Main Category: ", "").strip()
-        tags_with_relevance = []
+        tags = []
 
-        for line in result[2:7]:
-            # ":"이 포함된 줄만 처리하도록 조건 추가
-            if ": " in line:
-                tag, relevance = line.split(": ", maxsplit=1)
-                tag = tag.replace("- ", "").strip()
-                relevance = float(relevance.strip())
-                tags_with_relevance.append((tag, relevance))
+        for line in result[2:5]:  # 태그 3개만 파싱
+            if line.strip():  # 빈 줄 제외
+                tag = line.replace("- ", "").strip()
+                tags.append(tag)
             else:
-                print(f"WARNING: 잘못된 형식 -> {line}")  # 경고 메시지 출력
+                print(f"WARNING: 잘못된 형식 -> {line}")
 
-        return main_category, tags_with_relevance
+        return main_category, tags
 
-    # 태그와 연관성을 DB에 저장
-    async def save_tags(self, article_id: int, tags_with_relevance: List[Tuple[str, float]]):
-        for tag_name, relevance in tags_with_relevance:
+    # 태그 DB 저장
+    async def save_tags(self, article_id: int, tags: List[str]):
+        for tag_name in tags:
             tag = await self.tag_repo.get_tag_by_name(tag_name)
             if not tag:
                 tag = Tag.create(tag_name)
                 tag = await self.tag_repo.save_tag(tag)
-                print(f"생성:", tag_name)
-            print(f"중복:",tag_name)
-            await self.article_repo.save_article_tag(article_id, tag.id, relevance)
+                print(f"생성: {tag_name}")
+            else:
+                print(f"중복: {tag_name}")
+            await self.article_repo.save_article_tag(article_id, tag.id)
 
     # 새 태그와 기존 태그 간 유사도 계산 후 저장
     async def save_tag_similarities(self, tags_with_relevance: List[Tuple[str, float]]):
@@ -129,6 +125,7 @@ class ArticleService:
                     # 유사도 저장
                     await self.tag_similarity_repo.save_similarity(new_tag.id, existing_tag.id, similarity)
                     print(f"Tags: {new_tag.tag_name}, {existing_tag.tag_name} | Similarity: {similarity:.2f}")
+
     # OpenAI 로 두 태그의 유사도 계산
     async def calculate_tag_similarity(self, tag1: str, tag2: str) -> float:
         """OpenAI로 두 태그의 유사도를 계산"""
